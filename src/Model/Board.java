@@ -11,7 +11,7 @@ public class Board {
     public Board(ArrayList<Player> players){
         pot = 0.0f;
         this.players = players;
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<>();
         this.deck = new Deck();
     }
     public void startRound(){
@@ -21,6 +21,7 @@ public class Board {
         for(Player player :players){
             player.deal(deck);
         }
+
     }
     public void flop(){
         for(Player player :players){

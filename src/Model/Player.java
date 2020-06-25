@@ -12,7 +12,7 @@ public class Player {
     public Player(float chips,String name){
         this.chips = chips;
         this.name = name;
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<>();
     }
 
     public void deal(Deck deck){
@@ -28,6 +28,7 @@ public class Player {
     public void bet(Board board,float amount){
         board.addToPot(amount);
         this.chips -= amount;
+        amountBetThisRound += amount;
     }
     public void fold(){
         isFolded = true;
@@ -45,7 +46,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return chips + "   " + cards.get(0) + "   "+ cards.get(1);
+        return "Player "+name+": "+chips + "   " + cards.get(0) + "   "+ cards.get(1);
     }
 
     public void giveAmount(float potSize) {

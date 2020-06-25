@@ -46,6 +46,7 @@ public class RoundTest extends TestCase{
         roundController.fold();
         System.out.println(b);
 
+
     }
 
     public void testStages(){
@@ -64,15 +65,15 @@ public class RoundTest extends TestCase{
         roundController.fold();
         roundController.call();
         roundController.check();
-
+        System.out.println(b);
         roundController.check();
         roundController.check();
-
+        System.out.println(b);
         roundController.check();
         roundController.check();
-
+        System.out.println(b);
         roundController.check();
         roundController.check();
-
+        System.out.println(b);
     }
 }

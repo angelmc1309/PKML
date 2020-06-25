@@ -22,12 +22,16 @@ public class RoundController {
     public RoundController (Board board, ArrayList<Player> players){
         this.board = board;
         this.players = players;
-        this.BB = 5;
-        this.SB = 4;
-        this.D = 3;
+        this.BB = 4;
+        this.SB = 3;
+        this.D = 2;
     }
 
     public void startRound(){
+        BB = (BB+1) % 6;
+        SB = (SB+1) % 6;
+        D  = (D +1) % 6;
+        restartBets();
         board.startRound();
         players.get(BB).bet(board,BBsize);
         players.get(SB).bet(board,SBsize);
@@ -54,39 +58,46 @@ public class RoundController {
     public void fold(){
         players.get(playerTurn).fold();
         nextPlayer();
-        int nextToPlay;
-        nextToPlay = (playerTurn +1)%6;
-        while(players.get(nextToPlay).isFolded()){
-            nextToPlay = (nextToPlay +1)%6;
-        }
-        if(nextToPlay%6 ==playerTurn%6){
-            giveAllPot(playerTurn);
-            startRound();
-        }
+
     }
     public void check(){
         nextPlayer();
     }
 
     private void nextPlayer() {
-
+        if(preflop && playerTurn == playerToCall && playerTurn == BB){
+            nextStage();
+            return;
+        }
         int nextToPlay;
+        playerTurn = (playerTurn +1)%6;
+        while(players.get(playerTurn).isFolded()){
+            playerTurn = (playerTurn +1)%6;
+        }
+
         nextToPlay = (playerTurn +1)%6;
         while(players.get(nextToPlay).isFolded()){
             nextToPlay = (nextToPlay +1)%6;
         }
 
-        playerTurn = nextToPlay;
+        if(nextToPlay == playerTurn){
+            giveAllPot(playerTurn);
+            startRound();
+
+        }else if(playerTurn == playerToCall && !preflop){
+            nextStage();
+        }
     }
 
     private void nextStage() {
+        restartBets();
         preflop = false;
         playerTurn = (D+1)%6;
         while (players.get(playerTurn).isFolded()){
             playerTurn = (playerTurn+1)%6;
         }
         amountBet = 0;
-        playerToCall = -1;
+        playerToCall = playerTurn;
         if(stage == 0){
             stage++;
             board.flop();
@@ -104,11 +115,17 @@ public class RoundController {
             showDown();
         }
     }
-    public void showDown(){
+    private void showDown(){
         //TODO
+        startRound();
     }
     private void giveAllPot(int playerTurn) {
         players.get(playerTurn).giveAmount(board.potSize());
+    }
+    private void restartBets(){
+        for(Player p : players){
+            p.setAmountBetThisRound(0);
+        }
     }
 
 
