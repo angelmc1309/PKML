@@ -52,4 +52,8 @@ public class Player {
     public void giveAmount(float potSize) {
         this.chips += potSize;
     }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
 }

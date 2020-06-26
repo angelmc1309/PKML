@@ -71,4 +71,8 @@ public class Board {
     public float potSize() {
         return pot;
     }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
 }
