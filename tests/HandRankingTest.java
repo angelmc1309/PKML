@@ -77,6 +77,99 @@ public class HandRankingTest extends TestCase {
         assert (!ShowDownDecider.isStraightFlush(output));
         System.out.println(output);
 
+    }
 
+    public void testFourOfAKind(){
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(new Card(1,2));
+        cards.add(new Card(1,1));
+        cards.add(new Card(13,1));
+        cards.add(new Card(12,1));
+        cards.add(new Card(11,1));
+        cards.add(new Card(10,1));
+        cards.add(new Card(8,3));
+        ArrayList<Card> output = (ArrayList<Card>) cards.clone();
+        assert (!ShowDownDecider.isFourOfAKind(output));
+        System.out.println(output);
+
+        cards.clear();
+        cards.add(new Card(1,2));
+        cards.add(new Card(1,1));
+        cards.add(new Card(1,3));
+        cards.add(new Card(6,1));
+        cards.add(new Card(7,3));
+        cards.add(new Card(1,4));
+        cards.add(new Card(11,3));
+        output = (ArrayList<Card>) cards.clone();
+        assert (ShowDownDecider.isFourOfAKind(output));
+        System.out.println(output);
+
+        cards.clear();
+        cards.add(new Card(2,2));
+        cards.add(new Card(2,1));
+        cards.add(new Card(2,3));
+        cards.add(new Card(6,1));
+        cards.add(new Card(6,2));
+        cards.add(new Card(6,4));
+        cards.add(new Card(6,3));
+        output = (ArrayList<Card>) cards.clone();
+        assert (ShowDownDecider.isFourOfAKind(output));
+        System.out.println(output);
+
+    }
+
+    public void testFullHouse(){
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(new Card(1,2));
+        cards.add(new Card(1,1));
+        cards.add(new Card(13,1));
+        cards.add(new Card(12,1));
+        cards.add(new Card(11,1));
+        cards.add(new Card(10,1));
+        cards.add(new Card(8,3));
+        ArrayList<Card> output = (ArrayList<Card>) cards.clone();
+        assert (!ShowDownDecider.isFullHouse(output));
+        System.out.println(output);
+
+        cards.clear();
+        cards.add(new Card(2,2));
+        cards.add(new Card(2,1));
+        cards.add(new Card(2,3));
+        cards.add(new Card(6,1));
+        cards.add(new Card(6,2));
+        cards.add(new Card(6,4));
+        cards.add(new Card(7,3));
+        output = (ArrayList<Card>) cards.clone();
+        assert (ShowDownDecider.isFullHouse(output));
+        System.out.println(output);
+
+        cards.clear();
+        cards.add(new Card(2,2));
+        cards.add(new Card(2,1));
+        cards.add(new Card(7,3));
+        cards.add(new Card(6,1));
+        cards.add(new Card(6,2));
+        cards.add(new Card(6,4));
+        cards.add(new Card(7,3));
+        output = (ArrayList<Card>) cards.clone();
+        assert (ShowDownDecider.isFullHouse(output));
+        System.out.println(output);
+
+        cards.clear();
+        cards.add(new Card(2,2));
+        cards.add(new Card(2,1));
+        cards.add(new Card(7,3));
+        cards.add(new Card(1,1));
+        cards.add(new Card(1,2));
+        cards.add(new Card(1,4));
+        cards.add(new Card(7,3));
+        output = (ArrayList<Card>) cards.clone();
+        assert (ShowDownDecider.isFullHouse(output));
+        System.out.println(output);
+
+    }
+
+    public void testFlush(){
+        
     }
 }
