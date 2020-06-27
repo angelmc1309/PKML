@@ -3,6 +3,7 @@ package Controller;
 import Model.Board;
 import Model.Card;
 import Model.Player;
+import sun.awt.geom.AreaOp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -210,6 +211,156 @@ public class ShowDownDecider {
         cards.clear();
         return false;
 
+    }
+
+    public static boolean isStraight(ArrayList<Card> cards){
+        Collections.sort(cards);
+        Collections.reverse(cards);
+        Card highest = cards.get(0);
+        while(cards.size() > 4 || highest.getNumber() < 6){
+            if(highest.getNumber() == 1){
+                Card second =searchByNumber(highest.getNumber()+1,cards)
+                        ,third = searchByNumber(highest.getNumber()+2,cards)
+                        ,fourth = searchByNumber(highest.getNumber()+3,cards)
+                        ,fifth = searchByNumber(highest.getNumber()+4,cards);
+                if(second != null && third != null && fourth != null && fifth != null){
+                    cards.clear();
+                    cards.add(highest);
+                    cards.add(second);
+                    cards.add(third);
+                    cards.add(fourth);
+                    cards.add(fifth);
+                    return true;
+                }
+                second =searchByNumber(13,cards);
+                third = searchByNumber(12,cards);
+                fourth = searchByNumber(11,cards);
+                fifth = searchByNumber(10,cards);
+                if(second != null && third != null && fourth != null && fifth != null){
+                    cards.clear();
+                    cards.add(highest);
+                    cards.add(second);
+                    cards.add(third);
+                    cards.add(fourth);
+                    cards.add(fifth);
+                    return true;
+                }
+                cards.remove(highest);
+                highest = cards.get(0);
+
+            }else {
+                Card second = searchByNumber(highest.getNumber() - 1, cards),
+                        third = searchByNumber(highest.getNumber() - 2, cards),
+                        fourth = searchByNumber(highest.getNumber() - 3, cards),
+                        fifth = searchByNumber(highest.getNumber() - 4, cards);
+                if(second != null && third != null && fourth != null && fifth != null){
+                    cards.clear();
+                    cards.add(highest);
+                    cards.add(second);
+                    cards.add(third);
+                    cards.add(fourth);
+                    cards.add(fifth);
+                    return true;
+                }
+                else{
+                    cards.remove(highest);
+                    highest = cards.get(0);
+                }
+            }
+        }
+        cards.clear();
+        return false;
+
+    }
+
+    public static boolean isThreeOfAKind(ArrayList<Card> cards){
+        ArrayList<Card> trios = new ArrayList<>();
+        for(Card card :cards){
+            if(countAppareances(card.getNumber(),cards) >= 3){
+                trios.add(card);
+                cards.remove(card);
+                Card card1 = searchByNumber(card.getNumber(),cards);
+                trios.add(card1);
+                cards.remove(card1);
+                Card card2 = searchByNumber(card.getNumber(),cards);
+                trios.add(card2);
+                cards.remove(card2);
+                Collections.sort(cards);
+                trios.add(cards.get(cards.size()-1));
+                trios.add(cards.get(cards.size()-2));
+                cards.clear();
+                cards.addAll(trios);
+                return true;
+            }
+        }
+        cards.clear();
+        return false;
+
+    }
+
+    public static boolean isTwoPair(ArrayList<Card> cards){
+        ArrayList<Card> duos = new ArrayList<>();
+        for(Card card :cards){
+            if(countAppareances(card.getNumber(),cards) >= 2){
+                duos.add(card);
+            }
+        }
+        if(duos.size() >= 4){
+            Collections.sort(duos);
+
+
+            cards.remove(duos.get(duos.size()-1));
+            cards.remove(duos.get(duos.size()-2));
+            cards.remove(duos.get(duos.size()-3));
+            cards.remove(duos.get(duos.size()-4));
+
+            Collections.sort(cards);
+            Card higher = cards.get(cards.size()-1);
+            cards.clear();
+            cards.add(duos.get(duos.size()-1));
+            cards.add(duos.get(duos.size()-2));
+            cards.add(duos.get(duos.size()-3));
+            cards.add(duos.get(duos.size()-4));
+            cards.add(higher);
+            return true;
+        }
+        cards.clear();
+        return false;
+    }
+
+    public static boolean isPair(ArrayList<Card> cards){
+        ArrayList<Card> duos = new ArrayList<>();
+        for(Card card :cards){
+            if(countAppareances(card.getNumber(),cards) >= 2){
+                duos.add(card);
+            }
+        }
+        if(duos.size()>=2){
+
+            cards.remove(duos.get(duos.size()-1));
+            cards.remove(duos.get(duos.size()-2));
+            Collections.sort(cards);
+            Card higher1 = cards.get(cards.size()-1);
+            Card higher2 = cards.get(cards.size()-2);
+            Card higher3 = cards.get(cards.size()-3);
+            cards.clear();
+            cards.add(duos.get(duos.size()-1));
+            cards.add(duos.get(duos.size()-2));
+            cards.add(higher1);
+            cards.add(higher2);
+            cards.add(higher3);
+            return true;
+        }
+        cards.clear();
+        return false;
+    }
+
+    public static boolean isHighCard(ArrayList<Card> cards){
+        Collections.sort(cards);
+        cards.remove(0);
+        cards.remove(0);
+        Collections.reverse(cards);
+        return true;
     }
 
     private static Card searchByNumber(int number,ArrayList<Card> cards){
