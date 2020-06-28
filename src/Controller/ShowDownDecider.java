@@ -3,34 +3,108 @@ package Controller;
 import Model.Board;
 import Model.Card;
 import Model.Player;
-import sun.awt.geom.AreaOp;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class ShowDownDecider {
-
-    public static ArrayList<Player> getRoundWinners(ArrayList<Player> auxiliar, Board board) {
-        int ranks[];
-        ranks = getRanks(auxiliar,board);
-        return auxiliar;
-
-    }
-
-    private static int[] getRanks(ArrayList<Player> auxiliar, Board board) {
-        int ranks[] = new int[auxiliar.size()];
-        for(Player player : auxiliar){
-            ArrayList<Card> cards = player.getCards();
+    public static String[] handNames  = {"","HIGH CARD","PAIR","TWO PAIR","THREE OF A KIND","STRAIGHT","FLUSH","FULL HOUSE"
+    ,"FOUR OF A KIND","STRAIGHT FLUSH","ROYAL FLUSH"};
+    public static ArrayList<Player> getRoundWinners(ArrayList<Player> players, Board board) {
+        int ranks[] = new int[players.size()];
+        ArrayList<ArrayList<Card>> hands = new ArrayList<>();
+        for(int i = 0; i < players.size();i++){
+            ArrayList<Card> cards = new ArrayList<>(players.get(i).getCards());
             cards.addAll(board.getCards());
-
-
-            /*Check if royal flush*/
-            //TODO
-
-
+            ranks[i] = getRank(cards);
+            System.out.println("Player "+i+" has:" +handNames[ranks[i]]);
+            hands.add(cards);
         }
-        return ranks;
+        int max = 0;
+        for(int i = 0;i<ranks.length; i++){
+            if(ranks[i]>max){
+                max = ranks[i];
+            }
+        }
+        ArrayList<Player> roundWinners = new ArrayList<>();
+        ArrayList<ArrayList<Card>> winnerHands = new ArrayList<>();
+        for(int i = 0;i<ranks.length; i++){
+            if(ranks[i] == max){
+                roundWinners.add(players.get(i));
+                winnerHands.add(hands.get(i));
+            }
+        }
+        ArrayList<Player> losers = new ArrayList<>();
+        for(int i = 0;i<roundWinners.size();i++){
+            for(int j = 0;j<roundWinners.size();j++){
+                if(compareHand(winnerHands.get(i),winnerHands.get(j)) == -1){
+                    losers.add(roundWinners.get(i));
+                }
+            }
+        }
+        for(Player loser: losers){
+            roundWinners.remove(loser);
+        }
+        return roundWinners;
+
     }
+    private static int compareHand(ArrayList<Card> cards,ArrayList<Card> other){
+
+        for(int i = 0;i<cards.size();i++){
+            if(cards.get(i).compareTo(other.get(i)) == 1){
+                return 1;
+            }else if(cards.get(i).compareTo(other.get(i)) == -1){
+                return -1;
+            }
+        }
+        return 0;
+
+    }
+
+    private static int getRank(ArrayList<Card> cards){
+        ArrayList<Card> save = (ArrayList<Card>) cards.clone();
+        if(isRoyalFlush(cards)){
+            return 10;
+        }
+        cards.addAll(save);
+        if(isStraightFlush(cards)){
+            return 9;
+        }
+        cards.addAll(save);
+        if(isFourOfAKind(cards)){
+            return 8;
+        }
+        cards.addAll(save);
+        if(isFullHouse(cards)){
+            return 7;
+        }
+        cards.addAll(save);
+        if(isFlush(cards)){
+            return 6;
+        }
+        cards.addAll(save);
+        if(isStraight(cards)){
+            return 5;
+        }
+        cards.addAll(save);
+        if(isThreeOfAKind(cards)){
+            return 4;
+        }
+        cards.addAll(save);
+        if(isTwoPair(cards)){
+            return 3;
+        }
+        cards.addAll(save);
+        if(isPair(cards)){
+            return 2;
+        }
+        cards.addAll(save);
+        isHighCard(cards);
+        return 1;
+    }
+
+
     //Should be private, public for testing
     public static boolean isRoyalFlush(ArrayList<Card> cards){
 
@@ -62,7 +136,7 @@ public class ShowDownDecider {
         Collections.sort(cards);
         Collections.reverse(cards);
         Card highest = cards.get(0);
-        while(cards.size() > 4 || highest.getNumber() < 6){
+        while(cards.size() > 4 ){
             if(highest.getNumber() == 1){
                 Card second =searchByNumberAndSuit(highest.getNumber()+1,highest.getSuit(),cards)
                         ,third = searchByNumberAndSuit(highest.getNumber()+2,highest.getSuit(),cards)
@@ -217,7 +291,7 @@ public class ShowDownDecider {
         Collections.sort(cards);
         Collections.reverse(cards);
         Card highest = cards.get(0);
-        while(cards.size() > 4 || highest.getNumber() < 6){
+        while(cards.size() > 4 ){
             if(highest.getNumber() == 1){
                 Card second =searchByNumber(highest.getNumber()+1,cards)
                         ,third = searchByNumber(highest.getNumber()+2,cards)

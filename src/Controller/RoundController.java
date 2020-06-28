@@ -116,13 +116,13 @@ public class RoundController {
         }
     }
     private void showDown(){
-        ArrayList<Player> auxiliar = new ArrayList<>();
+        ArrayList<Player> showndowners = new ArrayList<>();
         for(Player player : players){
             if(!player.isFolded()){
-                auxiliar.add(player);
+                showndowners.add(player);
             }
         }
-        auxiliar = ShowDownDecider.getRoundWinners(auxiliar,board);
+        showndowners = ShowDownDecider.getRoundWinners(showndowners,board);
         startRound();
     }
     private void giveAllPot(int playerTurn) {

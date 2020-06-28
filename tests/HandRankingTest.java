@@ -1,5 +1,7 @@
 import Controller.ShowDownDecider;
+import Model.Board;
 import Model.Card;
+import Model.Player;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -439,6 +441,25 @@ public class HandRankingTest extends TestCase {
         output = (ArrayList<Card>) cards.clone();
         assert (ShowDownDecider.isHighCard(output));
         System.out.println(output);
+    }
+
+    public void testRoundWinners(){
+        ArrayList<Player> players = new ArrayList<>();
+        for(int i = 0;i<6;i++){
+            players.add(new Player(3000,Integer.toString(i)));
+        }
+        Board b = new Board(players);
+        for(int i = 0;i<100;i++){
+            b.startRound();
+            b.flop();
+            b.turn();
+            b.river();
+            ArrayList<Player> winners = ShowDownDecider.getRoundWinners(players,b);
+            System.out.println(b);
+            System.out.println(winners);
+        }
+
+
     }
 
 
