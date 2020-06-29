@@ -57,10 +57,11 @@ public class Board {
         for(Card c : cards){
             returnVal += c + "   ";
         }
-        returnVal += "\n PLAYER CARDS: \n";
+        returnVal += "\nPLAYER CARDS: \n";
         for(Player p : players){
             returnVal += p + "\n";
         }
+        returnVal += "\n POT SIZE: "+potSize()+"\n";
         return returnVal;
     }
 

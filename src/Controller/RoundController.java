@@ -30,6 +30,7 @@ public class RoundController {
     }
 
     public void startRound(){
+        //System.out.println(board);
         BB = (BB+1) % 6;
         SB = (SB+1) % 6;
         D  = (D +1) % 6;
@@ -39,6 +40,7 @@ public class RoundController {
             }
         }
         restartBets();
+        //System.out.println(board);
         board.startRound();
         players.get(BB).bet(board,BBsize);
         players.get(SB).bet(board,SBsize);
@@ -52,6 +54,7 @@ public class RoundController {
                 player.fold();
             }
         }
+        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
 
     }
 
@@ -75,7 +78,11 @@ public class RoundController {
 
     }
     public void allIn(){
+        preflop = false;
+        playerToCall = playerTurn;
+        amountBet = players.get(playerTurn).getChips() + players.get(playerTurn).getAmountBetThisRound();
         players.get(playerTurn).allIn(board);
+        players.get(playerTurn).setAmountBetThisRound(amountBet);
         nextPlayer();
     }
     public void fold(){
@@ -135,10 +142,12 @@ public class RoundController {
                 giveAllPot(playerTurn);
                 startRound();
             }
+            else{showDown();}
 
         }else if(playerTurn == playerToCall && !preflop){
             nextStage();
         }
+        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
     }
 
     private void nextStage() {
@@ -164,8 +173,10 @@ public class RoundController {
             System.out.println("RIVER");
         }
         else if(stage == 3){
+            System.out.println(board);
             showDown();
         }
+        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
     }
     private void showDown(){
         ArrayList<Player> showndowners = new ArrayList<>();

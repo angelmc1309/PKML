@@ -56,7 +56,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player "+name+": "+chips + "   " + cards.get(0) + "   "+ cards.get(1);
+        return " "+name+": "+chips + "   " + cards.get(0) + "   "+ cards.get(1);
     }
 
     public void giveAmount(float potSize) {
