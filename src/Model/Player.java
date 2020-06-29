@@ -8,11 +8,13 @@ public class Player {
     private String name;
     private boolean isFolded;
     private float amountBetThisRound;
+    private float allInAmount;
 
     public Player(float chips,String name){
         this.chips = chips;
         this.name = name;
         cards = new ArrayList<>();
+        allInAmount = 0;
     }
 
     public void deal(Deck deck){
@@ -21,6 +23,7 @@ public class Player {
         cards.add(deck.pick());
         isFolded = false;
         amountBetThisRound = 0;
+        allInAmount = 0;
     }
     public String getName(){
         return name;
@@ -29,6 +32,13 @@ public class Player {
         board.addToPot(amount);
         this.chips -= amount;
         amountBetThisRound += amount;
+    }
+    public void allIn(Board board){
+        allInAmount = chips;
+        this.bet(board,chips);
+    }
+    public float getAllInAmount(){
+        return this.allInAmount;
     }
     public void fold(){
         isFolded = true;
@@ -55,5 +65,13 @@ public class Player {
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    public float getChips() {
+        return chips;
+    }
+
+    public boolean isAllIn() {
+        return allInAmount > 0;
     }
 }

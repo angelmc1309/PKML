@@ -18,7 +18,7 @@ public class ShowDownDecider {
             ArrayList<Card> cards = new ArrayList<>(players.get(i).getCards());
             cards.addAll(board.getCards());
             ranks[i] = getRank(cards);
-            System.out.println("Player "+i+" has:" +handNames[ranks[i]]);
+            //System.out.println("Player "+i+" has:" +handNames[ranks[i]]);
             hands.add(cards);
         }
         int max = 0;

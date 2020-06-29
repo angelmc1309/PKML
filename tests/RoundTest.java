@@ -31,20 +31,23 @@ public class RoundTest extends TestCase{
         }
         Board b = new Board(p);
         RoundController roundController = new RoundController(b,p);
-
-        roundController.startRound();
-        System.out.println(b);
-        roundController.fold();
-        roundController.call();
-        roundController.call();
-        roundController.call();
-        roundController.fold();
-        roundController.raise(200);
-        roundController.fold();
-        roundController.fold();
-        roundController.raise(400);
-        roundController.fold();
-        System.out.println(b);
+        try {
+            roundController.startRound();
+            System.out.println(b);
+            roundController.fold();
+            roundController.call();
+            roundController.call();
+            roundController.call();
+            roundController.fold();
+            roundController.raise(200);
+            roundController.fold();
+            roundController.fold();
+            roundController.raise(400);
+            roundController.fold();
+            System.out.println(b);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
 
     }
@@ -56,24 +59,29 @@ public class RoundTest extends TestCase{
         }
         Board b = new Board(p);
         RoundController roundController = new RoundController(b,p);
+        try {
 
-        roundController.startRound();
-        System.out.println(b);
-        roundController.fold();
-        roundController.fold();
-        roundController.fold();
-        roundController.fold();
-        roundController.call();
-        roundController.check();
-        System.out.println(b);
-        roundController.check();
-        roundController.check();
-        System.out.println(b);
-        roundController.check();
-        roundController.check();
-        System.out.println(b);
-        roundController.check();
-        roundController.check();
-        System.out.println(b);
+
+            roundController.startRound();
+            System.out.println(b);
+            roundController.fold();
+            roundController.fold();
+            roundController.fold();
+            roundController.fold();
+            roundController.call();
+            roundController.check();
+            System.out.println(b);
+            roundController.check();
+            roundController.check();
+            System.out.println(b);
+            roundController.check();
+            roundController.check();
+            System.out.println(b);
+            roundController.check();
+            roundController.check();
+            System.out.println(b);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }
