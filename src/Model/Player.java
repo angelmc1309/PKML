@@ -34,7 +34,7 @@ public class Player {
         amountBetThisRound += amount;
     }
     public void allIn(Board board){
-        allInAmount = chips;
+        allInAmount = chips+amountBetThisRound;
         this.bet(board,chips);
     }
     public float getAllInAmount(){

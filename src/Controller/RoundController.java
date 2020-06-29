@@ -182,10 +182,18 @@ public class RoundController {
         }
         if(allInPlayers.size() > 0){
             float allInSizes[] = new float[allInPlayers.size()];
+            float potSizes[] = new float[allInPlayers.size()];
             for(int i = 0;i<allInPlayers.size();i++){
                 allInSizes[i] = allInPlayers.get(i).getAllInAmount();
+                potSizes[i] = allInSizes[i];
             }
             Arrays.sort(allInSizes);
+            Arrays.sort(potSizes);
+            for(int i = 1;i<allInPlayers.size();i++){
+                for(int j = i-1;j >= 0;j--){
+                    potSizes[i] -= potSizes[j];
+                }
+            }
             ArrayList<Player> potParticipants = new ArrayList<>();
             for(int i = 0;i<allInPlayers.size();i++){
                 for(Player p : showndowners){
@@ -193,14 +201,9 @@ public class RoundController {
                         potParticipants.add(p);
                     }
                 }
-                float desiredPot = potParticipants.size() * allInSizes[i];
-                for(int j = 0;j<allInSizes.length;j++){
-                    allInSizes[j] -= allInSizes[i];
-                }
-                if(desiredPot > board.potSize()){
-                    desiredPot = board.potSize();
-                }
-                potParticipants = ShowDownDecider.getRoundWinners(showndowners,board);
+                float desiredPot = potParticipants.size() * potSizes[i];
+
+                potParticipants = ShowDownDecider.getRoundWinners(potParticipants,board);
                 for(Player player : potParticipants){
                     player.giveAmount(desiredPot/potParticipants.size());
                     board.addToPot(-desiredPot/potParticipants.size());
@@ -213,7 +216,7 @@ public class RoundController {
                         potParticipants.add(p);
                     }
                 }
-                potParticipants = ShowDownDecider.getRoundWinners(showndowners,board);
+                potParticipants = ShowDownDecider.getRoundWinners(potParticipants,board);
                 for(Player player : potParticipants){
                     player.giveAmount(board.potSize()/potParticipants.size());
                 }
