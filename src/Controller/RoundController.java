@@ -20,6 +20,8 @@ public class RoundController {
     private boolean preflop;
     //0 for preflop,1 for flop,2 for river,3 for turn
     private int stage;
+    private boolean gameStarted;
+
 
     public RoundController (Board board, ArrayList<Player> players){
         this.board = board;
@@ -30,18 +32,33 @@ public class RoundController {
     }
 
     public void startRound(){
-        //System.out.println(board);
-        BB = (BB+1) % 6;
-        SB = (SB+1) % 6;
-        D  = (D +1) % 6;
+        if(gameStarted) {
+            System.out.println(board);
+        }
+        board.startRound();
         for(Player player : players){
             if(player.getChips() <= 0){
                 player.fold();
             }
         }
+
+        D  = (D +1) % 6;
+        while(players.get(D).isFolded()){
+            D = (D + 1) % 6;
+        }
+        SB = (D+1) % 6;
+        while(players.get(SB).isFolded()){
+            SB = (SB + 1) % 6;
+        }
+        BB = (SB + 1) % 6;
+        while(players.get(BB).isFolded()){
+            BB = (BB + 1) % 6;
+        }
+
+
+
         restartBets();
-        //System.out.println(board);
-        board.startRound();
+
         players.get(BB).bet(board,BBsize);
         players.get(SB).bet(board,SBsize);
         playerTurn = (BB+1)%6;
@@ -55,7 +72,7 @@ public class RoundController {
             }
         }
         System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
-
+        gameStarted = true;
     }
 
     public void call() throws Exception{
@@ -69,6 +86,16 @@ public class RoundController {
         if(amount > players.get(playerTurn).getChips()){
             throw new Exception("Not enough chips to RAISE");
         }
+        if(amount + players.get(playerTurn).getAmountBetThisRound() == amountBet ){
+            this.call();
+            System.out.println("CALLing a raise");
+            return;
+        }
+        if(amount + players.get(playerTurn).getAmountBetThisRound() + BBsize< amountBet ){
+            throw new Exception("This RAISE is too small");
+
+        }
+
         preflop = false;
         playerToCall = playerTurn;
         amountBet = amount + players.get(playerTurn).getAmountBetThisRound();
@@ -115,6 +142,9 @@ public class RoundController {
 
             }
             showDown();
+            //System.out.println(board);
+            startRound();
+            return;
         }
         if(preflop && playerTurn == playerToCall && playerTurn == BB){
             nextStage();
@@ -141,13 +171,22 @@ public class RoundController {
             if(!isAnyAllIn) {
                 giveAllPot(playerTurn);
                 startRound();
+                return;
             }
-            else{showDown();}
+            else{
+                if(players.get(playerTurn).isAllIn() || players.get(playerTurn).getAmountBetThisRound() >= amountBet){
+                    showDown();
+                    //System.out.println(board);
+                    startRound();
+                    return;
+                }
+            }
 
         }else if(playerTurn == playerToCall && !preflop){
             nextStage();
+            return;
         }
-        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
+        System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
     }
 
     private void nextStage() {
@@ -163,20 +202,25 @@ public class RoundController {
             stage++;
             board.flop();
             System.out.println("FLOP");
+            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }else if(stage == 1){
             stage++;
             board.turn();
             System.out.println("TURN");
+            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }else if(stage == 2){
             stage++;
             board.river();
             System.out.println("RIVER");
+            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }
         else if(stage == 3){
-            System.out.println(board);
+            //System.out.println(board);
             showDown();
+            //System.out.println(board);
+            startRound();
         }
-        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
+
     }
     private void showDown(){
         ArrayList<Player> showndowners = new ArrayList<>();
@@ -192,6 +236,11 @@ public class RoundController {
             }
         }
         if(allInPlayers.size() > 0){
+            for(Player player : players){
+                if(!player.isAllIn() && !player.isFolded()){
+                    allInPlayers.add(player);
+                }
+            }
             float allInSizes[] = new float[allInPlayers.size()];
             float potSizes[] = new float[allInPlayers.size()];
             for(int i = 0;i<allInPlayers.size();i++){
@@ -223,7 +272,7 @@ public class RoundController {
             }
             if(board.potSize() > 0){
                 for(Player p: players){
-                    if(!p.isFolded() && !p.isAllIn()){
+                    if(!p.isFolded()){
                         potParticipants.add(p);
                     }
                 }
@@ -241,7 +290,6 @@ public class RoundController {
                 player.giveAmount(board.potSize()/showndowners.size());
             }
         }
-        startRound();
     }
     private void giveAllPot(int playerTurn) {
         players.get(playerTurn).giveAmount(board.potSize());
@@ -253,4 +301,15 @@ public class RoundController {
     }
 
 
+    public void setBB(int index) {
+        this.BB = index;
+    }
+
+    public void setSB(int index) {
+        this.SB = index;
+    }
+
+    public void setD(int index) {
+        this.D = index;
+    }
 }

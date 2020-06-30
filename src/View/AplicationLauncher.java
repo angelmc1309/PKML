@@ -13,7 +13,8 @@ public class AplicationLauncher {
         controller.startGame();
         String action = "";
         System.out.println(controller.boardToString());
-        while(action != "QUIT"){
+
+        while(!action.equals("QUIT") ){
             try {
                 action = sc.next();
                 switch (action) {

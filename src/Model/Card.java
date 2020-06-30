@@ -1,8 +1,8 @@
 package Model;
 
 public class Card implements Comparable<Card>{
-    public static String suitNames[] ={"Spades","Clubs","Diamonds","Hearts"};
-    public static String cardNames[]={"Ace","2","3","4","5","6","7","8","9","10","J","Q","K"};
+    public static String suitNames[] ={"Spades  ","Clubs   ","Diamonds","Hearts  "};
+    public static String cardNames[]={"A ","2 ","3 ","4 ","5 ","6 ","7 ","8 ","9 ","10","J ","Q ","K "};
     // 1 for Ace, 11 for J,12 for Q, 13 for K, equivalent number for the rest.
     private int number;
     // 1 for Spades,2 for Clubs,3 for Diamonds,4 for Hearts

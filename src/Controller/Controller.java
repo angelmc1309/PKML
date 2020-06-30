@@ -14,7 +14,7 @@ public class Controller {
     public Controller(){
         players = new ArrayList<Player>();
         for(int i=0;i<numPlayers;i++){
-            players.add(new Player(3000,"Player "+i));
+            players.add(new Player(3000,"Player "+ (i+1) ));
         }
         board = new Board(players);
         roundController = new RoundController(board,players);
@@ -36,10 +36,18 @@ public class Controller {
     public void allIn(){
         roundController.allIn();
     }
+
     public void fold(){
         roundController.fold();
     }
+
     public String boardToString(){
         return board.toString();
+    }
+
+    public void setBB(int index){
+        roundController.setBB(index);
+        roundController.setSB(index);
+        roundController.setD(index);
     }
 }

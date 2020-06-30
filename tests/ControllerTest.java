@@ -5,6 +5,7 @@ public class ControllerTest extends TestCase {
     public void testRound(){
         Controller controller = new Controller();
         controller.startGame();
+
         try {
             System.out.println(controller.boardToString());
             controller.fold();
