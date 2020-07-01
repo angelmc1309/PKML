@@ -18,6 +18,7 @@ public class Player {
     private String name;
     private boolean isFolded;
     private float amountBetThisRound;
+    private float totalAmountBet;
     private float allInAmount;
 
     public Player(float chips,String name){
@@ -34,6 +35,7 @@ public class Player {
         isFolded = false;
         amountBetThisRound = 0;
         allInAmount = 0;
+        totalAmountBet = 0;
     }
     public String getName(){
         return name;
@@ -42,6 +44,7 @@ public class Player {
         board.addToPot(amount);
         this.chips -= amount;
         amountBetThisRound += amount;
+        totalAmountBet += amount;
     }
     public void allIn(Board board){
         allInAmount = chips+amountBetThisRound;
@@ -91,5 +94,13 @@ public class Player {
 
     public boolean isAllIn() {
         return allInAmount > 0;
+    }
+
+    public float getTotalAmountBet() {
+        return totalAmountBet;
+    }
+
+    public void setTotalAmountBet(float i) {
+        amountBetThisRound = i;
     }
 }

@@ -58,7 +58,9 @@ public class RoundController {
 
 
         restartBets();
-
+        for(Player player :players){
+            player.setTotalAmountBet(0);
+        }
         players.get(BB).bet(board,BBsize);
         players.get(SB).bet(board,SBsize);
         playerTurn = (BB+1)%6;
@@ -71,7 +73,7 @@ public class RoundController {
                 player.fold();
             }
         }
-        System.out.println("Player : "+ players.get(playerTurn).getName() +"turn");
+        System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         gameStarted = true;
     }
 
@@ -243,6 +245,7 @@ public class RoundController {
             }
             float allInSizes[] = new float[allInPlayers.size()];
             float potSizes[] = new float[allInPlayers.size()];
+            float potOffset[] = new float[allInPlayers.size()];
             for(int i = 0;i<allInPlayers.size();i++){
                 allInSizes[i] = allInPlayers.get(i).getAllInAmount();
                 potSizes[i] = allInSizes[i];
@@ -254,14 +257,35 @@ public class RoundController {
                     potSizes[i] -= potSizes[j];
                 }
             }
+            for(Player player : players){
+                if(player.isFolded()){
+                    float amountBet = player.getTotalAmountBet();
+                    for(int i = 0;i< allInPlayers.size();i++){
+                        if( amountBet < allInSizes[i]){
+                            if(i == 0){
+                                potOffset[i] += amountBet;
+                            }else {
+                                potOffset[i] += amountBet - allInSizes[i - 1];
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
             ArrayList<Player> potParticipants = new ArrayList<>();
-            for(int i = 0;i<allInPlayers.size();i++){
+            for(int i = allInPlayers.size()-1;i >= 0;i--){
                 for(Player p : showndowners){
                     if(!p.isAllIn() || p.getAllInAmount() >= allInSizes[i]){
                         potParticipants.add(p);
                     }
                 }
-                float desiredPot = potParticipants.size() * potSizes[i];
+                int amountOfOverBets = 0;
+                for(Player player : players){
+                    if(player.getTotalAmountBet() >= allInSizes[i]){
+                        amountOfOverBets++;
+                    }
+                }
+                float desiredPot = amountOfOverBets * potSizes[i] + potOffset[i];
 
                 potParticipants = ShowDownDecider.getRoundWinners(potParticipants,board);
                 for(Player player : potParticipants){
@@ -270,7 +294,8 @@ public class RoundController {
                 }
                 potParticipants.clear();
             }
-            if(board.potSize() > 0){
+            System.out.println(board.potSize());
+            /*if(board.potSize() > 0){
                 for(Player p: players){
                     if(!p.isFolded()){
                         potParticipants.add(p);
@@ -280,7 +305,7 @@ public class RoundController {
                 for(Player player : potParticipants){
                     player.giveAmount(board.potSize()/potParticipants.size());
                 }
-            }
+            }*/
 
 
         }

@@ -14,7 +14,7 @@ public class Controller {
     public Controller(){
         players = new ArrayList<Player>();
         for(int i=0;i<numPlayers;i++){
-            players.add(new Player(3000,"Player "+ (i+1) ));
+            players.add(new Player(1000*i+200,"Player "+ (i+1) ));
         }
         board = new Board(players);
         roundController = new RoundController(board,players);
