@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RoundController {
-    private final float BBsize = 20,SBsize = BBsize/2;
+    private final float BBsize = 1,SBsize = BBsize/2;
 
     private Board board;
     private ArrayList<Player> players;
@@ -22,6 +22,8 @@ public class RoundController {
     private int stage;
     private boolean gameStarted;
 
+    private int handCount = 0;
+
 
     public RoundController (Board board, ArrayList<Player> players){
         this.board = board;
@@ -33,12 +35,14 @@ public class RoundController {
 
     public void startRound(){
         if(gameStarted) {
-            System.out.println(board);
+            //System.out.println(board);
         }
+        handCount++;
         board.startRound();
         for(Player player : players){
-            if(player.getChips() <= 0){
-                player.fold();
+            if(player.getChips() < 100){
+                player.substractToBankRoll(100 - player.getChips());
+                player.setChips(100);
             }
         }
 
@@ -60,6 +64,10 @@ public class RoundController {
         restartBets();
         for(Player player :players){
             player.setTotalAmountBet(0);
+            player.setPreflopHistory("");
+            player.setFlopHistory("");
+            player.setTurnHistory("");
+            player.setRiverHistory("");
         }
         players.get(BB).bet(board,BBsize);
         players.get(SB).bet(board,SBsize);
@@ -73,7 +81,7 @@ public class RoundController {
                 player.fold();
             }
         }
-        System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
+        //System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         gameStarted = true;
     }
 
@@ -81,7 +89,36 @@ public class RoundController {
         if(amountBet - players.get(playerTurn).getAmountBetThisRound() > players.get(playerTurn).getChips()){
             throw new Exception("Not enough chips to CALL");
         }
+        if(stage == 0){
+            players.get(playerTurn).setPreflopHistory("C");
+
+        }
+        else if(stage == 1){
+            if(players.get(playerTurn).getFlopHistory().equals("CK")) {
+                players.get(playerTurn).setFlopHistory("CK-C");
+            }else{
+                players.get(playerTurn).setFlopHistory("C");
+            }
+        }
+        else if(stage == 2){
+            if(players.get(playerTurn).getTurnHistory().equals("CK")) {
+                players.get(playerTurn).setTurnHistory("CK-C");
+            }else{
+                players.get(playerTurn).setTurnHistory("C");
+            }
+        }
+        else if(stage == 3){
+            if(players.get(playerTurn).getRiverHistory().equals("CK")) {
+                players.get(playerTurn).setRiverHistory("CK-C");
+            }else{
+                players.get(playerTurn).setRiverHistory("C");
+            }
+        }
+
         players.get(playerTurn).bet(board,amountBet-players.get(playerTurn).getAmountBetThisRound());
+        if(players.get(playerTurn).getChips() == 0){
+            players.get(playerTurn).allIn(board);
+        }
         nextPlayer();
     }
     public void raise(float amount)throws Exception{
@@ -90,13 +127,44 @@ public class RoundController {
         }
         if(amount + players.get(playerTurn).getAmountBetThisRound() == amountBet ){
             this.call();
-            System.out.println("CALLing a raise");
+            //System.out.println("CALLing a raise");
             return;
         }
         if(amount + players.get(playerTurn).getAmountBetThisRound() + BBsize< amountBet ){
             throw new Exception("This RAISE is too small");
 
         }
+        double potProportion = amount / board.potSize();
+        if(stage == 0){
+            if(amountBet == BBsize){
+                players.get(playerTurn).setPreflopHistory("OPEN");
+            }
+            if(amountBet >= 2*BBsize){
+                players.get(playerTurn).setPreflopHistory("3B");
+            }
+        }
+        else if(stage == 1){
+            if(players.get(playerTurn).getFlopHistory().equals("CK")) {
+                players.get(playerTurn).setFlopHistory("CK-R "+ potProportion);
+            }else{
+                players.get(playerTurn).setFlopHistory("R "+ potProportion);
+            }
+        }
+        else if(stage == 2){
+            if(players.get(playerTurn).getTurnHistory().equals("CK")) {
+                players.get(playerTurn).setTurnHistory("CK-R "+ potProportion);
+            }else{
+                players.get(playerTurn).setTurnHistory("R "+ potProportion);
+            }
+        }
+        else if(stage == 3){
+            if(players.get(playerTurn).getRiverHistory().equals("CK")) {
+                players.get(playerTurn).setRiverHistory("CK-R "+ potProportion);
+            }else{
+                players.get(playerTurn).setRiverHistory("R "+ potProportion);
+            }
+        }
+
 
         preflop = false;
         playerToCall = playerTurn;
@@ -107,9 +175,36 @@ public class RoundController {
 
     }
     public void allIn(){
+        amountBet = players.get(playerTurn).getChips() + players.get(playerTurn).getAmountBetThisRound();
+        double potProportion = amountBet / board.potSize();
+
+        if(stage == 0){
+
+            players.get(playerTurn).setPreflopHistory("A " + potProportion);
+
+        }
+        else if(stage == 1){
+
+            players.get(playerTurn).setFlopHistory("A "+ potProportion);
+
+        }
+        else if(stage == 2){
+
+            players.get(playerTurn).setTurnHistory("A "+ potProportion);
+
+        }
+        else if(stage == 3){
+
+            players.get(playerTurn).setRiverHistory("A "+ potProportion);
+
+        }
+
         preflop = false;
         playerToCall = playerTurn;
-        amountBet = players.get(playerTurn).getChips() + players.get(playerTurn).getAmountBetThisRound();
+        if(players.get(playerTurn).getChips() + players.get(playerTurn).getAmountBetThisRound() > amountBet){
+            amountBet = players.get(playerTurn).getChips() + players.get(playerTurn).getAmountBetThisRound();
+        }
+
         players.get(playerTurn).allIn(board);
         players.get(playerTurn).setAmountBetThisRound(amountBet);
         nextPlayer();
@@ -123,6 +218,19 @@ public class RoundController {
         if(amountBet > players.get(playerTurn).getAmountBetThisRound()){
             throw new Exception("Not allowed to CHECK");
         }
+        if(stage == 0){
+            players.get(playerTurn).setPreflopHistory("CK");
+        }
+        else if(stage == 1){
+            players.get(playerTurn).setFlopHistory("CK");
+        }
+        else if(stage == 2){
+            players.get(playerTurn).setTurnHistory("CK");
+        }
+        else if(stage == 3){
+            players.get(playerTurn).setRiverHistory("CK");
+        }
+
         nextPlayer();
     }
 
@@ -177,6 +285,15 @@ public class RoundController {
             }
             else{
                 if(players.get(playerTurn).isAllIn() || players.get(playerTurn).getAmountBetThisRound() >= amountBet){
+                    if(board.getCards().size() == 0){
+                        board.flop();
+                    }
+                    if(board.getCards().size() == 3){
+                        board.turn();
+                    }if(board.getCards().size() == 4){
+                        board.river();
+
+                    }
                     showDown();
                     //System.out.println(board);
                     startRound();
@@ -188,7 +305,17 @@ public class RoundController {
             nextStage();
             return;
         }
-        System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
+        else if(players.get(playerToCall).isAllIn()){
+            int previousPlayer = playerToCall > 0 ? (playerToCall-1)%6 : 5;
+            while (players.get(previousPlayer).isAllIn() || players.get(previousPlayer).isFolded()){
+                previousPlayer =  previousPlayer > 0 ? (previousPlayer-1)%6 : 5;
+            }
+            if(players.get(previousPlayer).getAmountBetThisRound() >= players.get(playerToCall).getAmountBetThisRound()){
+                nextStage();
+                return;
+            }
+        }
+       // System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
     }
 
     private void nextStage() {
@@ -203,18 +330,18 @@ public class RoundController {
         if(stage == 0){
             stage++;
             board.flop();
-            System.out.println("FLOP");
-            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
+            //System.out.println("FLOP");
+           // System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }else if(stage == 1){
             stage++;
             board.turn();
-            System.out.println("TURN");
-            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
+            //System.out.println("TURN");
+            //System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }else if(stage == 2){
             stage++;
             board.river();
-            System.out.println("RIVER");
-            System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
+            //System.out.println("RIVER");
+            //System.out.println("Player : "+ players.get(playerTurn).getName() +" turn");
         }
         else if(stage == 3){
             //System.out.println(board);
@@ -294,20 +421,6 @@ public class RoundController {
                 }
                 potParticipants.clear();
             }
-            System.out.println(board.potSize());
-            /*if(board.potSize() > 0){
-                for(Player p: players){
-                    if(!p.isFolded()){
-                        potParticipants.add(p);
-                    }
-                }
-                potParticipants = ShowDownDecider.getRoundWinners(potParticipants,board);
-                for(Player player : potParticipants){
-                    player.giveAmount(board.potSize()/potParticipants.size());
-                }
-            }*/
-
-
         }
         else {
             showndowners = ShowDownDecider.getRoundWinners(showndowners, board);
@@ -322,6 +435,7 @@ public class RoundController {
     private void restartBets(){
         for(Player p : players){
             p.setAmountBetThisRound(0);
+
         }
     }
 
@@ -336,5 +450,29 @@ public class RoundController {
 
     public void setD(int index) {
         this.D = index;
+    }
+
+    public int getPlayerTurn() {
+        return playerTurn;
+    }
+
+    public boolean canCheckPlayer(int playerTurn) {
+        return !(amountBet > players.get(playerTurn).getAmountBetThisRound());
+    }
+
+    public int getHandCount() {
+        return handCount;
+    }
+    public void resetHandCount(){
+        handCount = 0;
+    }
+
+    public double getMinRaise() {
+        if(amountBet == 0 || amountBet == BBsize){
+            return BBsize;
+        }
+
+        return amountBet * 2;
+
     }
 }

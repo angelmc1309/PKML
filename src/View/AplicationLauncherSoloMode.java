@@ -1,11 +1,12 @@
 package View;
 
+import Behaviour.BehaviourController;
 import Controller.Controller;
 
 import java.util.Scanner;
 
 
-public class AplicationLauncher {
+public class AplicationLauncherSoloMode {
 
     public static void main(String[] args) {
         Controller controller = new Controller();
@@ -47,6 +48,7 @@ public class AplicationLauncher {
             System.out.println(controller.boardToString());
 
         }
+
     }
 
 

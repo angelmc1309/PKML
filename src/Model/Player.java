@@ -3,15 +3,10 @@ package Model;
 import java.util.ArrayList;
 
 public class Player {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_WHITE = "\u001B[37m";
 
     private float chips;
     private ArrayList<Card> cards;
@@ -20,6 +15,15 @@ public class Player {
     private float amountBetThisRound;
     private float totalAmountBet;
     private float allInAmount;
+
+    private String preflopHistory = "";
+    private String flopHistory = "";
+    private String turnHistory = "";
+    private String riverHistory = "";
+
+    private float bankRoll = 0;
+
+    private boolean ownCardsChanged = false;
 
     public Player(float chips,String name){
         this.chips = chips;
@@ -32,10 +36,12 @@ public class Player {
         cards.clear();
         cards.add(deck.pick());
         cards.add(deck.pick());
+        ownCardsChanged = true;
         isFolded = false;
         amountBetThisRound = 0;
         allInAmount = 0;
         totalAmountBet = 0;
+
     }
     public String getName(){
         return name;
@@ -69,6 +75,9 @@ public class Player {
 
     @Override
     public String toString() {
+        if(cards.size() == 0){
+            return ANSI_RED+" "+name+": "+chips + "   " +ANSI_RESET;
+        }
         if(isAllIn()){
             return ANSI_RED+" "+name+": "+chips + "   " + cards.get(0) + "   "+ cards.get(1)+"   | BET: "
                     +amountBetThisRound+ANSI_RESET;
@@ -102,5 +111,56 @@ public class Player {
 
     public void setTotalAmountBet(float i) {
         amountBetThisRound = i;
+    }
+
+    public float getBankRoll(){
+        return bankRoll;
+    }
+    public void substractToBankRoll(float amount){
+        this.bankRoll -= amount;
+    }
+
+    public void setChips(float f) {
+        this.chips = f;
+    }
+
+    public void setPreflopHistory(String preflopHistory) {
+        this.preflopHistory = preflopHistory;
+    }
+
+    public void setFlopHistory(String flopHistory) {
+        this.flopHistory = flopHistory;
+    }
+
+    public void setTurnHistory(String turnHistory) {
+        this.turnHistory = turnHistory;
+    }
+
+    public void setRiverHistory(String riverHistory) {
+        this.riverHistory = riverHistory;
+    }
+
+    public String getPreflopHistory() {
+        return preflopHistory;
+    }
+
+    public String getFlopHistory() {
+        return flopHistory;
+    }
+
+    public String getTurnHistory() {
+        return turnHistory;
+    }
+
+    public String getRiverHistory() {
+        return riverHistory;
+    }
+
+    public boolean ownCardsChanged() {
+        if(ownCardsChanged){
+            ownCardsChanged = false;
+            return true;
+        }
+        return false;
     }
 }

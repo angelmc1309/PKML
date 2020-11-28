@@ -8,6 +8,8 @@ public class Board {
     private Deck deck;
     private ArrayList<Player> players;
 
+    private boolean boardCardsChanged = false;
+
     public Board(ArrayList<Player> players){
         pot = 0.0f;
         this.players = players;
@@ -21,6 +23,7 @@ public class Board {
         for(Player player :players){
             player.deal(deck);
         }
+        boardCardsChanged = true;
 
     }
     public void flop(){
@@ -30,6 +33,8 @@ public class Board {
         cards.add(deck.pick());
         cards.add(deck.pick());
         cards.add(deck.pick());
+
+        boardCardsChanged = true;
     }
     public void turn(){
         cards.add(deck.pick());
@@ -37,6 +42,7 @@ public class Board {
         for(Player player :players){
             player.setAmountBetThisRound(0);
         }
+        boardCardsChanged = true;
     }
     public void river(){
 
@@ -44,6 +50,8 @@ public class Board {
             player.setAmountBetThisRound(0);
         }
         cards.add(deck.pick());
+
+        boardCardsChanged = true;
     }
 
     public ArrayList<Player> getPlayers(){
@@ -75,5 +83,13 @@ public class Board {
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    public boolean boardCardsChanged() {
+        if(boardCardsChanged){
+            boardCardsChanged = false;
+            return true;
+        }
+        return false;
     }
 }
